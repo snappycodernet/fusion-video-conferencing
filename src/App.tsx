@@ -7,6 +7,7 @@ import {
   RoomContext,
   useDisconnectButton,
   useRoomContext,
+  PreJoin,
 } from '@livekit/components-react';
 import { Room, Track } from 'livekit-client';
 import '@livekit/components-styles';
@@ -15,7 +16,7 @@ import { useEffect, useState } from 'react';
 const authServerUrl = "http://localhost:8080"
 const serverUrl = "http://localhost:7880"
 const roomName = "Test Room"
-const identity = "Magic Johnson"
+//const identity = "Magic Johnson"
 
 export default function App() {
   const room = new Room({
@@ -73,7 +74,7 @@ const MyRoom = () => {
     }
   }
 
-  const connect = async () => {
+  const connect = async (identity: string) => {
     setLoading(true)
     const token = await fetchLiveKitToken(roomName, identity)
 
@@ -103,7 +104,12 @@ const MyRoom = () => {
           </div>
         ) : !connected ? (
           <div style={{margin: '8px'}}>
-            <button onClick={connect}>Connect</button>
+            <PreJoin 
+              onSubmit={(userChoices) => {
+                const identity = userChoices.username
+                connect(identity)
+              }}
+            />
           </div>
         ) : (
           <>
