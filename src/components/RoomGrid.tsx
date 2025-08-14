@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
 interface AppRoomConfig {
-    id: number,
+    id: string,
     roomName: string
 }
 
@@ -43,7 +43,7 @@ const RoomGrid = ({ roomConfigs }: RoomGridProps) => {
             {
                 roomConfigs.map((cfg) => (
                     <RoomGridButton key={cfg.id} onClick={() => navigate(`/room/${cfg.id}`)}>
-                        {cfg.roomName}
+                        Join Room {cfg.id} - {cfg.roomName}
                     </RoomGridButton>
                 ))
             }

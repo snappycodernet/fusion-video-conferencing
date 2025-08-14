@@ -1,14 +1,14 @@
 [
     {
-        "id": 1,
+        "id": "1",
         "roomName": "Clinician Dan Ballantyne - Encounter 123ABCD"
     },
     {
-        "id": 2,
+        "id": "2",
         "roomName": "Clinician Brandon Updegraff - Encounter C1D842B"
     },
     {
-        "id": 3,
+        "id": "3",
         "roomName": "Clinician Colin Black - Encounter 877AED1"
     }
 ]
