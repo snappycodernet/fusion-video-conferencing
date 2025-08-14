@@ -1,23 +1,43 @@
-import {
-  ControlBar,
-  GridLayout,
-  ParticipantTile,
-  RoomAudioRenderer,
-  useTracks,
-  RoomContext,
-  useDisconnectButton,
-  useRoomContext,
-  PreJoin,
-} from '@livekit/components-react';
-import { Room, Track } from 'livekit-client';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import '@livekit/components-styles';
-import { useEffect, useState } from 'react';
+import RoomGrid from './components/RoomGrid';
+import roomsData from './assets/rooms-config.json'
+import MeetingRoomPage from './screens/MeetingRoomPage';
+import NavLayout from './components/NavLayout';
 
-const authServerUrl = "http://localhost:8080"
-const serverUrl = "http://localhost:7880"
-const roomName = "Test Room"
-//const identity = "Magic Johnson"
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<NavLayout />}>
+          <Route index element={<RoomGrid roomConfigs={roomsData} />} />
+          <Route path="/room/:roomId" element={<MeetingRoomPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
+export default App;
+
+/*
+export interface AppRoomConfig {
+  id: number,
+  roomName: string
+}
+
+const App = () => {
+  const rooms: AppRoomConfig[] = roomsData
+
+  return (
+    <RoomGrid roomConfigs={rooms} />
+  )
+}
+
+export default App
+*/
+
+/*
 export default function App() {
   const room = new Room({
     // Optimize video quality for each participant's screen
@@ -32,7 +52,9 @@ export default function App() {
     </RoomContext.Provider>
   );
 }
+*/
 
+/*
 const MyRoom = () => {
   const room = useRoomContext()
   const [connected, setConnected] = useState(false);
@@ -125,7 +147,9 @@ const MyRoom = () => {
     </div>
   );
 }
+*/
 
+/*
 const MyVideoConference = () => {
   // `useTracks` returns all camera and screen share tracks. If a user
   // joins without a published camera track, a placeholder track is returned.
@@ -139,9 +163,8 @@ const MyVideoConference = () => {
 
   return (
     <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
-      {/* The GridLayout accepts zero or one child. The child is used
-      as a template to render all passed in tracks. */}
       <ParticipantTile />
     </GridLayout>
   );
 }
+*/
