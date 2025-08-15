@@ -4,7 +4,6 @@ import { Room, type RoomOptions } from "livekit-client";
 import MeetingRoom from "../components/MeetingRoom";
 import { useEffect, useState, type ReactNode } from "react";
 import { AUTH_SERVER_URL, LIVE_KIT_SERVER_URL } from "../constants/appConstants";
-import roomsData from '../assets/rooms-config.json'
 
 const DEFAULT_ROOM_OPTIONS: RoomOptions = {
   adaptiveStream: true, // Optimize video quality for each participant's screen
@@ -15,9 +14,8 @@ const MeetingRoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>()
   const [room] = useState(() => new Room(DEFAULT_ROOM_OPTIONS))
   const connectionState = useConnectionState(room)
-  const roomData = roomsData.find(rData => rData.id === roomId)
-
-  if (!roomId || !roomData) return <div>Invalid room</div>;
+  
+  if (!roomId) return <div>Invalid room</div>;
 
   // You can manage room connection lifecycle here
   useEffect(() => {
@@ -98,7 +96,7 @@ const MeetingRoomPage = () => {
 
   return (
     <RoomContext.Provider value={room}>
-      <h1 style={{textAlign: 'center'}}>{roomData.roomName}</h1>
+      <h1 style={{textAlign: 'center'}}>Room {roomId}</h1>
       <div data-lk-theme="default" style={{ height: '80vh' }}>
         {DisplayNode}
       </div>
