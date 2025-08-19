@@ -24,14 +24,14 @@ const MeetingRoomPage = () => {
     };
   }, [room]);
 
-  const fetchLiveKitToken = async (roomId: string, identity: string): Promise<string|null> => {
+  const fetchLiveKitToken = async (roomId: string, identity: string, isAdmin: boolean): Promise<string|null> => {
     try {
       const response = await fetch(`${AUTH_SERVER_URL}/token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ room: roomId , identity }),
+        body: JSON.stringify({ room: roomId, identity, isAdmin }),
       });
   
       if (!response.ok) {
@@ -47,8 +47,8 @@ const MeetingRoomPage = () => {
     }
   }
 
-  const connect = async (roomId: string, identity: string) => {
-    const token = await fetchLiveKitToken(roomId, identity)
+  const connect = async (roomId: string, identity: string, isAdmin: boolean) => {
+    const token = await fetchLiveKitToken(roomId, identity, isAdmin)
 
     if(token) {
       await room.connect(LIVE_KIT_SERVER_URL, token)
@@ -86,7 +86,7 @@ const MeetingRoomPage = () => {
           <PreJoin 
             onSubmit={(userChoices) => {
               const identity = userChoices.username
-              connect(roomId!, identity)
+              connect(roomId!, identity, true)
             }}
           />
         </div>
