@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/livekit/protocol/auth"
 	"github.com/livekit/protocol/livekit"
 	lksdk "github.com/livekit/server-sdk-go/v2"
@@ -109,7 +108,7 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := getJoinToken(apiKey, apiSecret, req.Room, req.Identity, req.IsAdmin)
 	if err != nil {
-		http.Error(w, "failed to generate token", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -132,7 +131,6 @@ func withCORS(h http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
-	godotenv.Load()
 	http.HandleFunc("/token", withCORS(tokenHandler))
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

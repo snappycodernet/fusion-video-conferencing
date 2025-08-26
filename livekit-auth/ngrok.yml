@@ -1,0 +1,14 @@
+version: 2
+tunnels:
+  livekit-client:
+    proto: http
+    addr: livekit-client:5173
+    domain: livekit-pndlm-client.ngrok.dev
+  livekit-auth:
+    proto: http
+    addr: livekit-auth:8080
+    domain: livekit-pndlm-auth.ngrok.dev
+  livekit-dev:
+    proto: http
+    addr: livekit-dev:7880
+    domain: livekit-pdnlm-dev.ngrok.dev
