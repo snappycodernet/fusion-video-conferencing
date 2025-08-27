@@ -1,8 +1,10 @@
 import { ControlBar, RoomAudioRenderer, useDisconnectButton, useRoomContext } from "@livekit/components-react";
 import ConferenceLayout from "./ConferenceLayout";
+import AdminPanel from "./AdminPanel";
 
 const MeetingRoom = () => {
   const room = useRoomContext()
+  //const localParticipant = useLocalParticipant()
 
   const { buttonProps } = useDisconnectButton({
     onClick: () => {
@@ -18,6 +20,7 @@ const MeetingRoom = () => {
         <ConferenceLayout />
         <RoomAudioRenderer />
         <ControlBar controls={{ leave: false }} />
+        <AdminPanel />
     </>
   );
 }

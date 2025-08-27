@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -78,7 +77,7 @@ func removeParticipantHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Use RoomServiceClient to remove participant
 	roomClient := lksdk.NewRoomServiceClient(hostUrl, apiKey, apiSecret)
-	_, err = roomClient.RemoveParticipant(context.Background(), &livekit.RoomParticipantIdentity{
+	_, err = roomClient.RemoveParticipant(r.Context(), &livekit.RoomParticipantIdentity{
 		Room:     req.Room,
 		Identity: req.Identity,
 	})
@@ -132,6 +131,7 @@ func withCORS(h http.HandlerFunc) http.HandlerFunc {
 
 func main() {
 	http.HandleFunc("/token", withCORS(tokenHandler))
+	http.HandleFunc("/admin/remove-participant", withCORS(removeParticipantHandler))
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -4,6 +4,8 @@ import { Room, type RoomOptions } from "livekit-client";
 import MeetingRoom from "../components/MeetingRoom";
 import { useEffect, useState, type ReactNode } from "react";
 import { AUTH_SERVER_URL, LIVE_KIT_SERVER_URL } from "../constants/appConstants";
+import { useDispatch } from "react-redux";
+import { clearToken, setToken } from "../redux/slices/authSlice";
 
 const DEFAULT_ROOM_OPTIONS: RoomOptions = {
   adaptiveStream: true, // Optimize video quality for each participant's screen
@@ -14,6 +16,7 @@ const MeetingRoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>()
   const [room] = useState(() => new Room(DEFAULT_ROOM_OPTIONS))
   const connectionState = useConnectionState(room)
+  const dispatch = useDispatch();
   
   if (!roomId) return <div>Invalid room</div>;
 
@@ -21,6 +24,7 @@ const MeetingRoomPage = () => {
   useEffect(() => {
     return () => {
       room.disconnect();
+      dispatch(clearToken())
     };
   }, [room]);
 
@@ -52,6 +56,7 @@ const MeetingRoomPage = () => {
 
     if(token) {
       await room.connect(LIVE_KIT_SERVER_URL, token)
+      dispatch(setToken(token))
     }
   };
 
