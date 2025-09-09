@@ -43,7 +43,7 @@ const RoomGrid = ({ roomConfigs }: RoomGridProps) => {
             {
                 roomConfigs.map((cfg) => (
                     <RoomGridButton key={cfg.id} onClick={() => navigate(`/room/${cfg.id}`)}>
-                        Join Room {cfg.id} - {cfg.roomName}
+                        Join {cfg.roomName}
                     </RoomGridButton>
                 ))
             }

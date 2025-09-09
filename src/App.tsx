@@ -1,11 +1,19 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import '@livekit/components-styles';
 import RoomGrid from './components/RoomGrid';
-import roomsData from './assets/rooms-config.json'
 import MeetingRoomPage from './screens/MeetingRoomPage';
 import NavLayout from './components/NavLayout';
+import { useEffect, useState } from 'react';
 
 const App = () => {
+  const [roomsData, setRoomsData] = useState([])
+  
+  useEffect(() => {
+    fetch('/rooms-config.json')
+      .then((res) => res.json())
+      .then((data) => setRoomsData(data));
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
