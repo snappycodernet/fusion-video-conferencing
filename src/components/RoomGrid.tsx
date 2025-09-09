@@ -28,7 +28,7 @@ const RoomGridButton = styled.div(({theme}) => ({
     backgroundColor: '#007bff',
     color: 'white',
     cursor: 'pointer',
-    width: '100%',
+    width: '300px',
     '&:hover': {
         backgroundColor: '#0056b3'
     }
