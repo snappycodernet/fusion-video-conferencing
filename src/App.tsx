@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import '@livekit/components-styles';
 import RoomGrid from './components/RoomGrid';
 import MeetingRoomPage from './screens/MeetingRoomPage';
@@ -19,6 +19,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<NavLayout />}>
           <Route index element={<RoomGrid roomConfigs={roomsData} />} />
+          <Route path="/room" element={<Navigate to="/" replace />} />
           <Route path="/room/:roomId" element={<MeetingRoomPage />} />
         </Route>
       </Routes>
