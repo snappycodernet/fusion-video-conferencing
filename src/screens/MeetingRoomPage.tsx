@@ -6,6 +6,20 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AUTH_SERVER_URL, LIVE_KIT_SERVER_URL } from "../constants/appConstants";
 import { useDispatch } from "react-redux";
 import { clearToken, setToken } from "../redux/slices/authSlice";
+import styled from "@emotion/styled";
+
+const MeetingRoomErrorRoot = styled.div(({theme}) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    color: 'red',
+    fontSize: '16px',
+    padding: '8px',
+}))
+
 
 const DEFAULT_ROOM_OPTIONS: RoomOptions = {
   adaptiveStream: true, // Optimize video quality for each participant's screen
@@ -15,6 +29,7 @@ const DEFAULT_ROOM_OPTIONS: RoomOptions = {
 const MeetingRoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>()
   const [room] = useState(() => new Room(DEFAULT_ROOM_OPTIONS))
+  const [error, setError] = useState<string|null>(null)
   const connectionState = useConnectionState(room)
   const dispatch = useDispatch();
   
@@ -37,16 +52,18 @@ const MeetingRoomPage = () => {
         },
         body: JSON.stringify({ room: roomId, identity, isAdmin }),
       });
-  
+
       if (!response.ok) {
-        throw new Error(`Token request failed: ${response.statusText}`);
+        const errText = await response.text()
+        throw new Error(errText);
       }
   
       const data = await response.json();
 
       return data.token;
     }
-    catch(err) {
+    catch(err: any) {
+      setError(err.message)
       return null
     }
   }
@@ -87,13 +104,21 @@ const MeetingRoomPage = () => {
     case 'disconnected':
     default:
       DisplayNode = (
-        <div style={{margin: '8px'}}>
+        <div style={{margin: '8px', background: '#111'}}>
           <PreJoin 
             onSubmit={(userChoices) => {
+              setError(null)
               const identity = userChoices.username
               connect(roomId!, identity, true)
             }}
           />
+          {
+            error && (
+              <MeetingRoomErrorRoot>
+                {error}
+              </MeetingRoomErrorRoot>
+            )
+          }
         </div>
       )
       break

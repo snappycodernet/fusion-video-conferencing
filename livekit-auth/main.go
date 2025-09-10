@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,6 +14,26 @@ import (
 	"github.com/livekit/protocol/livekit"
 	lksdk "github.com/livekit/server-sdk-go/v2"
 )
+
+var LIVEKIT_API_KEY = os.Getenv("LIVEKIT_API_KEY")
+var LIVEKIT_API_SECRET = os.Getenv("LIVEKIT_API_SECRET")
+var LIVEKIT_HOST_URL = os.Getenv("LIVEKIT_HOST_URL")
+
+func identityInUse(identity string, room string) bool {
+	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+
+	resp, _ := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
+		Room: room,
+	})
+
+	for _, participant := range resp.Participants {
+		if participant.Identity == identity {
+			return true
+		}
+	}
+
+	return false
+}
 
 func getJoinToken(apiKey string, apiSecret string, room string, identity string, isAdmin bool) (string, error) {
 	canPublish := true
@@ -58,11 +79,8 @@ func removeParticipantHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Parse and verify the token
 	verifier, err := auth.ParseAPIToken(token)
-	apiKey := os.Getenv("LIVEKIT_API_KEY")
-	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
-	hostUrl := os.Getenv("LIVEKIT_HOST_URL")
 
-	claims, err := verifier.Verify(apiSecret)
+	claims, err := verifier.Verify(LIVEKIT_API_SECRET)
 	if err != nil {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)
 		return
@@ -76,7 +94,7 @@ func removeParticipantHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use RoomServiceClient to remove participant
-	roomClient := lksdk.NewRoomServiceClient(hostUrl, apiKey, apiSecret)
+	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
 	_, err = roomClient.RemoveParticipant(r.Context(), &livekit.RoomParticipantIdentity{
 		Room:     req.Room,
 		Identity: req.Identity,
@@ -102,10 +120,14 @@ func tokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiKey := os.Getenv("LIVEKIT_API_KEY")
-	apiSecret := os.Getenv("LIVEKIT_API_SECRET")
+	inUse := identityInUse(req.Identity, req.Room)
 
-	token, err := getJoinToken(apiKey, apiSecret, req.Room, req.Identity, req.IsAdmin)
+	if inUse {
+		http.Error(w, "Username has been taken.", http.StatusConflict)
+		return
+	}
+
+	token, err := getJoinToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, req.Room, req.Identity, req.IsAdmin)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

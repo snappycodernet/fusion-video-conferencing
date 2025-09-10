@@ -4,6 +4,7 @@ import RoomGrid from './components/RoomGrid';
 import MeetingRoomPage from './screens/MeetingRoomPage';
 import NavLayout from './components/NavLayout';
 import { useEffect, useState } from 'react';
+import NotFound from './components/NotFound';
 
 const App = () => {
   const [roomsData, setRoomsData] = useState([])
@@ -21,6 +22,7 @@ const App = () => {
           <Route index element={<RoomGrid roomConfigs={roomsData} />} />
           <Route path="/room" element={<Navigate to="/" replace />} />
           <Route path="/room/:roomId" element={<MeetingRoomPage />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
