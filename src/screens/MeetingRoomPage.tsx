@@ -1,12 +1,13 @@
 import { PreJoin, RoomContext, useConnectionState } from "@livekit/components-react";
 import { useParams } from "react-router-dom";
-import { Room, type RoomOptions } from "livekit-client";
+import { Room, RoomEvent, type RoomOptions } from "livekit-client";
 import MeetingRoom from "../components/MeetingRoom";
 import { useEffect, useState, type ReactNode } from "react";
 import { AUTH_SERVER_URL, LIVE_KIT_SERVER_URL } from "../constants/appConstants";
 import { useDispatch } from "react-redux";
 import { clearToken, setToken } from "../redux/slices/authSlice";
 import styled from "@emotion/styled";
+import PreJoinParticipantList from "../components/PreJoinParticipantList";
 
 const MeetingRoomErrorRoot = styled.div(({theme}) => ({
     display: 'flex',
@@ -19,7 +20,6 @@ const MeetingRoomErrorRoot = styled.div(({theme}) => ({
     fontSize: '16px',
     padding: '8px',
 }))
-
 
 const DEFAULT_ROOM_OPTIONS: RoomOptions = {
   adaptiveStream: true, // Optimize video quality for each participant's screen
@@ -105,6 +105,7 @@ const MeetingRoomPage = () => {
     default:
       DisplayNode = (
         <div style={{margin: '8px', background: '#111'}}>
+          <PreJoinParticipantList roomId={roomId} />
           <PreJoin 
             onSubmit={(userChoices) => {
               setError(null)

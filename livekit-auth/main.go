@@ -108,6 +108,37 @@ func removeParticipantHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Participant removed successfully"))
 }
 
+func getParticipantsHandler(w http.ResponseWriter, r *http.Request) {
+	type request struct {
+		Room string `json:"room"`
+	}
+	var req request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request", http.StatusBadRequest)
+		return
+	}
+
+	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+	resp, err := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
+		Room: req.Room,
+	})
+
+	if err != nil {
+		http.Error(w, "failed to fetch participant list", http.StatusInternalServerError)
+		return
+	}
+
+	payload, err := json.Marshal(resp.Participants)
+
+	if err != nil {
+		http.Error(w, "failed to marshal participant list", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(payload)
+}
+
 func tokenHandler(w http.ResponseWriter, r *http.Request) {
 	type request struct {
 		Room     string `json:"room"`
@@ -154,6 +185,7 @@ func withCORS(h http.HandlerFunc) http.HandlerFunc {
 func main() {
 	http.HandleFunc("/token", withCORS(tokenHandler))
 	http.HandleFunc("/admin/remove-participant", withCORS(removeParticipantHandler))
+	http.HandleFunc("/participants", withCORS(getParticipantsHandler))
 	log.Println("Server running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
