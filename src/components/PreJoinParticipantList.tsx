@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { Participant } from 'livekit-client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AUTH_SERVER_URL } from '../constants/appConstants'
 
 const PreJoinParticipantListRoot = styled.div(({theme}) => ({
@@ -16,14 +16,13 @@ const PreJoinParticipantListRoot = styled.div(({theme}) => ({
     background: '#333'
 }))
 
-let interval: number
-
 interface PreJoinParticipantListProps {
     roomId: string
 }
 
 const PreJoinParticipantList = ({ roomId }: PreJoinParticipantListProps) => {
     const [participants, setParticipants] = useState<Participant[]>([])
+    const intervalRef = useRef<NodeJS.Timeout|null>(null)
 
     useEffect(() => {
         const getParticipantList = async () => {
@@ -33,16 +32,16 @@ const PreJoinParticipantList = ({ roomId }: PreJoinParticipantListProps) => {
 
         getParticipantList()
 
-        interval = setInterval(getParticipantList, 3000)
+        intervalRef.current = setInterval(getParticipantList, 5000)
 
         return () => {
-            clearInterval(interval)
+            if(intervalRef.current) {
+                clearInterval(intervalRef.current)
+            }
         }
     }, [])
 
-    console.log('room participants', participants)
-
-    const fetchParticipants = async () => {
+    const fetchParticipants = useCallback(async () => {
         try {
             const response = await fetch(`${AUTH_SERVER_URL}/participants`, {
                 method: "POST",
@@ -51,8 +50,6 @@ const PreJoinParticipantList = ({ roomId }: PreJoinParticipantListProps) => {
                 },
                 body: JSON.stringify({ room: roomId }),
             });
-
-            console.log('fetchParticipantsResponse', response)
     
             if (!response.ok) {
                 const errText = await response.text()
@@ -61,20 +58,24 @@ const PreJoinParticipantList = ({ roomId }: PreJoinParticipantListProps) => {
         
             const data = await response.json();
     
-            return data || []
+            return data
         }
         catch(err) {
             console.log('err', err)
 
             return []
         }
-    }
+    }, [roomId])
     
     return (
         <PreJoinParticipantListRoot>
             <h3>{participants.length} Participant(s):</h3>
             {
-                participants.sort().map(p => p.identity).join(', ')
+                participants
+                    .slice()
+                    .sort((a, b) => a.identity.localeCompare(b.identity))
+                    .map(p => p.identity)
+                    .join(', ')
             }
         </PreJoinParticipantListRoot>
     )

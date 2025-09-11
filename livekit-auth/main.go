@@ -128,7 +128,17 @@ func getParticipantsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload, err := json.Marshal(resp.Participants)
+	participants := []livekit.ParticipantInfo{}
+
+	if resp.Participants != nil {
+		for _, p := range resp.Participants {
+			if p != nil {
+				participants = append(participants, *p)
+			}
+		}
+	}
+
+	payload, err := json.Marshal(participants)
 
 	if err != nil {
 		http.Error(w, "failed to marshal participant list", http.StatusInternalServerError)
