@@ -8,7 +8,3 @@ tunnels:
     proto: http
     addr: livekit-auth:8080
     domain: livekit-pndlm-auth.ngrok.dev
-  livekit-dev:
-    proto: http
-    addr: livekit-dev:7880
-    domain: livekit-pdnlm-dev.ngrok.dev

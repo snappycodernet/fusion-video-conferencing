@@ -19,16 +19,41 @@ var LIVEKIT_API_KEY = os.Getenv("LIVEKIT_API_KEY")
 var LIVEKIT_API_SECRET = os.Getenv("LIVEKIT_API_SECRET")
 var LIVEKIT_HOST_URL = os.Getenv("LIVEKIT_HOST_URL")
 
+func roomExists(roomName string) bool {
+	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+
+	// check if room exists
+	result, _ := roomClient.ListRooms(context.Background(), &livekit.ListRoomsRequest{
+		Names: []string{roomName},
+	})
+
+	if result == nil {
+		return false
+	}
+
+	if result.Rooms == nil {
+		return false
+	}
+
+	if len(result.Rooms) == 0 {
+		return false
+	}
+
+	return true
+}
+
 func identityInUse(identity string, room string) bool {
 	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
 
-	resp, _ := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
-		Room: room,
-	})
+	if roomExists(room) {
+		resp, _ := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
+			Room: room,
+		})
 
-	for _, participant := range resp.Participants {
-		if participant.Identity == identity {
-			return true
+		for _, participant := range resp.Participants {
+			if participant.Identity == identity {
+				return true
+			}
 		}
 	}
 
@@ -94,14 +119,16 @@ func removeParticipantHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use RoomServiceClient to remove participant
-	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-	_, err = roomClient.RemoveParticipant(r.Context(), &livekit.RoomParticipantIdentity{
-		Room:     req.Room,
-		Identity: req.Identity,
-	})
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to remove participant: %v", err), http.StatusInternalServerError)
-		return
+	if roomExists(req.Room) {
+		roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+		_, err = roomClient.RemoveParticipant(r.Context(), &livekit.RoomParticipantIdentity{
+			Room:     req.Room,
+			Identity: req.Identity,
+		})
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to remove participant: %v", err), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -118,22 +145,24 @@ func getParticipantsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-	resp, err := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
-		Room: req.Room,
-	})
-
-	if err != nil {
-		http.Error(w, "failed to fetch participant list", http.StatusInternalServerError)
-		return
-	}
-
 	participants := []livekit.ParticipantInfo{}
 
-	if resp.Participants != nil {
-		for _, p := range resp.Participants {
-			if p != nil {
-				participants = append(participants, *p)
+	if roomExists(req.Room) {
+		roomClient := lksdk.NewRoomServiceClient(LIVEKIT_HOST_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
+		resp, err := roomClient.ListParticipants(context.Background(), &livekit.ListParticipantsRequest{
+			Room: req.Room,
+		})
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if resp.Participants != nil {
+			for _, p := range resp.Participants {
+				if p != nil {
+					participants = append(participants, *p)
+				}
 			}
 		}
 	}
