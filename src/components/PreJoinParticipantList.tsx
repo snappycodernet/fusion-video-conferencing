@@ -3,7 +3,7 @@ import { Participant } from 'livekit-client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AUTH_SERVER_URL } from '../constants/appConstants'
 
-const PreJoinParticipantListRoot = styled.div(({theme}) => ({
+const PreJoinParticipantListRoot = styled.div(({}) => ({
     display: 'flex',
     flexDirection: 'row',
     gap: '8px',

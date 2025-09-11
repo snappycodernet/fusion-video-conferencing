@@ -7,7 +7,7 @@ import { type RootState } from "../redux/store";
 import styled from "@emotion/styled";
 import { RemoteParticipant, RoomEvent } from "livekit-client";
 
-const AdminPanelRoot = styled.div(({theme}) => ({
+const AdminPanelRoot = styled.div(({}) => ({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -24,7 +24,7 @@ const AdminPanelRoot = styled.div(({theme}) => ({
     borderRadius: '8px',
 }))
 
-const AdminPanelRemoveButton = styled.button(({theme}) => ({
+const AdminPanelRemoveButton = styled.button(({}) => ({
     outline: 'none',
     border: 'none',
     borderRadius: '8px',

@@ -4,7 +4,6 @@ import AdminPanel from "./AdminPanel";
 
 const MeetingRoom = () => {
   const room = useRoomContext()
-  //const localParticipant = useLocalParticipant()
 
   const { buttonProps } = useDisconnectButton({
     onClick: () => {

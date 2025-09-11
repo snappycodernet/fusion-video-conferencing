@@ -10,7 +10,7 @@ interface RoomGridProps {
     roomConfigs: AppRoomConfig[]
 }
 
-const RoomGridRoot = styled.div(({theme}) => ({
+const RoomGridRoot = styled.div(({}) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
@@ -20,7 +20,7 @@ const RoomGridRoot = styled.div(({theme}) => ({
     margin: '32px',
 }))
 
-const RoomGridButton = styled.div(({theme}) => ({
+const RoomGridButton = styled.div(({}) => ({
     padding: '12px 24px',
     fontSize: '16px',
     borderRadius: '6px',

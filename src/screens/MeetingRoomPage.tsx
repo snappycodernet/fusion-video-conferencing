@@ -1,6 +1,6 @@
 import { PreJoin, RoomContext, useConnectionState } from "@livekit/components-react";
 import { useParams } from "react-router-dom";
-import { Room, RoomEvent, type RoomOptions } from "livekit-client";
+import { Room, type RoomOptions } from "livekit-client";
 import MeetingRoom from "../components/MeetingRoom";
 import { useEffect, useState, type ReactNode } from "react";
 import { AUTH_SERVER_URL, LIVE_KIT_SERVER_URL } from "../constants/appConstants";
@@ -9,7 +9,7 @@ import { clearToken, setToken } from "../redux/slices/authSlice";
 import styled from "@emotion/styled";
 import PreJoinParticipantList from "../components/PreJoinParticipantList";
 
-const MeetingRoomErrorRoot = styled.div(({theme}) => ({
+const MeetingRoomErrorRoot = styled.div(({}) => ({
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
